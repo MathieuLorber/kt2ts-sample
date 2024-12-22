@@ -4,7 +4,6 @@ import io.github.kt2tssample.subpackage.BaseDataClass
 import java.time.LocalDate
 import kt2ts.annotation.GenerateTypescript
 
-// must test nullabled
 @GenerateTypescript
 data class MyDataClass(
     // "scalar" types
@@ -18,11 +17,15 @@ data class MyDataClass(
     val nullableLong: Long?,
     val string: String,
     val nullableString: String?,
+    val enum: MyEnum,
+    val nullableEnum: MyEnum?,
     // collections
     val intList: List<Int>,
     val nullableIntList: List<Int?>,
     val stringList: List<String>,
     val nullableStringList: List<String?>,
+    val enumList: List<MyEnum>,
+    val nullableEnumList: List<MyEnum?>,
     val classList: List<BaseDataClass>,
     val nullableClassList: List<BaseDataClass?>,
     val nullableClassNullableList: List<BaseDataClass?>?,
@@ -31,6 +34,7 @@ data class MyDataClass(
     val nullableClassSet: Set<BaseDataClass?>,
     val nullableClassNullableSet: Set<BaseDataClass?>?,
     val nullableSet: Set<BaseDataClass>?,
+    val mapEnumKey: Map<MyEnum, BaseDataClass>,
     val map: Map<String, BaseDataClass>,
     val nullableClassMap: Map<String, BaseDataClass?>,
     val nullableClassNullableMap: Map<String, BaseDataClass?>?,
@@ -51,10 +55,3 @@ data class MyDataClass(
     val nullableClassNullablePair: Pair<BaseDataClass?, BaseDataClass?>?,
     val nullablePair: Pair<BaseDataClass, BaseDataClass>?,
 )
-
-// Boolean::class.qualifiedName -> ClassMapping("boolean")
-// Double::class.qualifiedName -> ClassMapping("number")
-// Int::class.qualifiedName -> ClassMapping("number")
-// Long::class.qualifiedName -> ClassMapping("number")
-// String::class.qualifiedName -> ClassMapping("string")
-// Set::class.qualifiedName,
