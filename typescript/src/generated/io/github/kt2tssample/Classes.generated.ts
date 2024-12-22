@@ -1,4 +1,5 @@
 import { LocalDate } from 'domain/datetime';
+import { MyEnum } from 'generated/io/github/kt2tssample/Enum.generated';
 import { BaseDataClass } from 'generated/io/github/kt2tssample/subpackage/SubPackageClasses.generated';
 
 export interface MyDataClass {
@@ -12,10 +13,14 @@ export interface MyDataClass {
   nullableLong?: number;
   string: string;
   nullableString?: string;
+  enum: MyEnum;
+  nullableEnum?: MyEnum;
   intList: number[];
   nullableIntList: (number | null)[];
   stringList: string[];
   nullableStringList: (string | null)[];
+  enumList: MyEnum[];
+  nullableEnumList: (MyEnum | null)[];
   classList: BaseDataClass[];
   nullableClassList: (BaseDataClass | null)[];
   nullableClassNullableList?: (BaseDataClass | null)[];
@@ -24,6 +29,7 @@ export interface MyDataClass {
   nullableClassSet: (BaseDataClass | null)[];
   nullableClassNullableSet?: (BaseDataClass | null)[];
   nullableSet?: BaseDataClass[];
+  mapEnumKey: any;
   map: any;
   nullableClassMap: any;
   nullableClassNullableMap?: any;
