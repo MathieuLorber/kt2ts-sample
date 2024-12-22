@@ -51,6 +51,8 @@ export interface MyDataClass {
   nullableClassPair: [BaseDataClass | null, BaseDataClass | null];
   nullableClassNullablePair?: [BaseDataClass | null, BaseDataClass | null];
   nullablePair?: [BaseDataClass, BaseDataClass];
+  any: any;
+  nullableAny?: any;
 }
 
 export interface ComplexStuff {
