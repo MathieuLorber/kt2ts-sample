@@ -1,0 +1,17 @@
+{
+  "name": "sample-kt2ts",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "prettier": "^3.4.2"
+  },
+  "scripts": {
+    "format": "prettier --config package.json --write \"src/**/*.ts{,x}\" \"script/**/*.mjs\""
+  },
+  "prettier": {
+    "parser": "typescript",
+    "singleQuote": true,
+    "trailingComma": "none",
+    "arrowParens": "avoid"
+  }
+}
