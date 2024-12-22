@@ -1,6 +1,8 @@
 import { LocalDate } from 'domain/datetime';
 import { MyEnum } from 'generated/io/github/kt2tssample/Enum.generated';
+import { MySampleId } from 'generated/io/github/kt2tssample/SampleId.generated';
 import { BaseDataClass } from 'generated/io/github/kt2tssample/subpackage/SubPackageClasses.generated';
+import { Dict } from 'utils/nominal-class';
 
 export interface MyDataClass {
   boolean: boolean;
@@ -29,15 +31,18 @@ export interface MyDataClass {
   nullableClassSet: (BaseDataClass | null)[];
   nullableClassNullableSet?: (BaseDataClass | null)[];
   nullableSet?: BaseDataClass[];
-  mapEnumKey: any;
-  map: any;
-  nullableClassMap: any;
-  nullableClassNullableMap?: any;
-  nullableMap?: any;
+  mapEnumKey: Dict<MyEnum, BaseDataClass>;
+  mapIdKey: Dict<MySampleId, BaseDataClass>;
+  map: Dict<string, BaseDataClass>;
+  nullableClassMap: Dict<string, BaseDataClass | null>;
+  nullableClassNullableMap?: Dict<string, BaseDataClass | null>;
+  nullableMap?: Dict<string, BaseDataClass>;
   date: LocalDate;
   nullableDate?: LocalDate;
   item: BaseDataClass;
   nullableItem?: BaseDataClass;
+  id: MySampleId;
+  nullableId?: MySampleId;
   intPair: [number, number];
   nullableIntPair: [number | null, number | null];
   stringPair: [string, string];
@@ -46,4 +51,8 @@ export interface MyDataClass {
   nullableClassPair: [BaseDataClass | null, BaseDataClass | null];
   nullableClassNullablePair?: [BaseDataClass | null, BaseDataClass | null];
   nullablePair?: [BaseDataClass, BaseDataClass];
+}
+
+export interface ComplexStuff {
+  value: [Dict<MySampleId, BaseDataClass>, BaseDataClass][][];
 }

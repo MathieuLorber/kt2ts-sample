@@ -20,11 +20,11 @@ ksp {
     arg(
         "kt2ts:nominalStringMappings",
         listOf(
-                "com.kttswebapptemplate.domain.SerializeAsString",
-                "com.kttswebapptemplate.domain.TemplateSampleId",
-                "com.kttswebapptemplate.domain.TemplateSampleSecurityString")
+            "io.github.kt2tssample.SampleId"
+        )
             .joinToString(separator = "|"))
-    arg("kt2ts:nominalStringImport", "utils/nominal-class.ts")
+    arg("kt2ts:mapClass", "Dict")
+    arg("kt2ts:mapClassFile", "utils/nominal-class.ts")
     arg("kt2ts:prettierDependencyInstall", "yarn")
     arg("kt2ts:prettierBinary", "node_modules/prettier/bin/prettier.cjs")
     arg("kt2ts:absoluteImport", "true")
@@ -38,7 +38,7 @@ dependencies {
 
     // kt2ts
     implementation("io.github.kt2ts:kt2ts-annotation:1.0.0")
-    ksp("io.github.kt2ts:kt2ts-ksp-generator:0.0.8")
+    ksp("io.github.kt2ts:kt2ts-ksp-generator:0.0.9")
 
     // utils
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
