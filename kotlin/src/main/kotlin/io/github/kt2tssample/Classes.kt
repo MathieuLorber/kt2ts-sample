@@ -57,6 +57,8 @@ data class MyDataClass(
     val nullableClassPair: Pair<BaseDataClass?, BaseDataClass?>,
     val nullableClassNullablePair: Pair<BaseDataClass?, BaseDataClass?>?,
     val nullablePair: Pair<BaseDataClass, BaseDataClass>?,
+    val any: Any,
+    val nullableAny: Any?,
 )
 
 @GenerateTypescript
