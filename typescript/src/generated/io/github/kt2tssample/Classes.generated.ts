@@ -56,5 +56,8 @@ export interface MyDataClass {
 }
 
 export interface ComplexStuff {
-  value: [Dict<MySampleId, BaseDataClass>, BaseDataClass][][];
+  value: [
+    Dict<MySampleId, Dict<MySampleId, BaseDataClass>[]>,
+    BaseDataClass
+  ][][];
 }
