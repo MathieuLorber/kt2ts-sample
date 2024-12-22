@@ -35,6 +35,7 @@ data class MyDataClass(
     val nullableClassNullableSet: Set<BaseDataClass?>?,
     val nullableSet: Set<BaseDataClass>?,
     val mapEnumKey: Map<MyEnum, BaseDataClass>,
+    val mapIdKey: Map<MySampleId, BaseDataClass>,
     val map: Map<String, BaseDataClass>,
     val nullableClassMap: Map<String, BaseDataClass?>,
     val nullableClassNullableMap: Map<String, BaseDataClass?>?,
@@ -45,6 +46,8 @@ data class MyDataClass(
     // data class
     val item: BaseDataClass,
     val nullableItem: BaseDataClass?,
+    val id: MySampleId,
+    val nullableId: MySampleId?,
     // kotlin Pair
     val intPair: Pair<Int, Int>,
     val nullableIntPair: Pair<Int?, Int?>,
@@ -55,3 +58,6 @@ data class MyDataClass(
     val nullableClassNullablePair: Pair<BaseDataClass?, BaseDataClass?>?,
     val nullablePair: Pair<BaseDataClass, BaseDataClass>?,
 )
+
+@GenerateTypescript
+data class ComplexStuff(val value: List<List<Pair<Map<MySampleId, BaseDataClass>, BaseDataClass>>>)
