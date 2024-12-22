@@ -37,7 +37,7 @@ dependencies {
 
     // kt2ts
     implementation("io.github.kt2ts:kt2ts-annotation:1.0.0")
-    ksp("io.github.kt2ts:kt2ts-ksp-generator:0.0.7")
+    ksp("io.github.kt2ts:kt2ts-ksp-generator:0.0.8")
 
     // utils
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.1")
