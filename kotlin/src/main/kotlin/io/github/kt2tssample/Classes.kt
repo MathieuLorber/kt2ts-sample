@@ -62,4 +62,4 @@ data class MyDataClass(
 )
 
 @GenerateTypescript
-data class ComplexStuff(val value: List<List<Pair<Map<MySampleId, BaseDataClass>, BaseDataClass>>>)
+data class ComplexStuff(val value: List<List<Pair<Map<MySampleId, List<Map<MySampleId, BaseDataClass>>>, BaseDataClass>>>)
