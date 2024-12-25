@@ -10,8 +10,6 @@ import kotlinx.ast.common.klass.KlassAnnotation
 import kotlinx.ast.common.klass.KlassDeclaration
 import kotlinx.ast.common.klass.KlassIdentifier
 import kotlinx.ast.common.klass.KlassString
-import kotlinx.ast.common.klass.expressions
-import kotlinx.ast.common.klass.identifierName
 import kotlinx.ast.grammar.kotlin.common.summary
 import kotlinx.ast.grammar.kotlin.common.summary.Import
 import kotlinx.ast.grammar.kotlin.common.summary.PackageHeader
@@ -101,25 +99,40 @@ private fun process(asts: List<Ast>): List<ClassDeclaration> =
           val modifiers = it.modifiers.filter { it.modifier in setOf("sealed", "data") }
           if (modifiers.isEmpty()) return@mapNotNull null
           //            val parents =
+            val annotations = processAnnotations(it.annotations)
+            // TODO qualifiedName
+            val selectionOrigins =
+                if (annotations.any { it.annotation.name == "GenerateTypescript" }) {
+                    listOf(SelectionOrigin.ByAnnotation(ClassSimpleName("GenerateTypescript")))
+                } else {
+                    emptyList()
+                }
+            val parentClasses = processParentClasses(it.children)
+            val fields = processFields(it.parameter)
           ClassDeclaration(
               localName = ClassSimpleName(identifier),
-              annotations = processAnnotations(it.annotations),
+              annotations = annotations,
               isSealed = modifiers.any { it.modifier == "sealed" },
               sealedSubClasses = emptyList(),
-              parentClasses = emptyList(),
-              fields =
-                  it.parameter.mapNotNull {
-                    val fieldName = it.identifier?.identifier ?: ""
-                    val type =
-                        it.type?.let {
-                          val identifier = it.identifierName()
-                          ClassSimpleName(identifier)
-                        } ?: return@mapNotNull null
-                    FieldDeclaration(fieldName, type)
-                  },
-              selectionOrigins = emptyList(),
+              parentClasses = parentClasses,
+              fields = fields,
+              selectionOrigins = selectionOrigins,
           )
         }
+
+fun processParentClasses(value: List<Ast>): List<ClassSimpleName> = emptyList()
+
+fun processFields(declarations: List<KlassDeclaration>): List<FieldDeclaration> =
+    declarations
+        .find { it.keyword == "constructor" }
+        ?.parameter
+        ?.filterIsInstance<KlassDeclaration>()
+        ?.mapNotNull {
+            val identifier = it.identifier?.identifier ?: return@mapNotNull null
+            val type = it.type?.firstOrNull()?.identifier ?: return@mapNotNull null
+            FieldDeclaration(fieldName = identifier, type = ClassSimpleName(type))
+        }
+        ?: emptyList()
 
 fun processAnnotations(annotations: List<KlassAnnotation>): List<ClassAnnotation> =
     annotations.mapNotNull {
