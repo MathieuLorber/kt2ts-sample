@@ -8,7 +8,17 @@ import kotlin.metadata.jvm.JvmMetadataVersion
 import kotlin.metadata.jvm.KotlinClassMetadata
 
 fun main() {
+//    val classes = ClassLoader.getSystemClassLoader()
+//        .definedPackages
+//        .flatMap { it.declaredClasses.toList() }
+stuff()
+}
+
+    fun stuff() {
     val clazz = SomeSealedClass::class.java
+    clazz.annotations.forEach {
+        println(it)
+    }
     val metadataAnnotation: Metadata = clazz.getAnnotation(Metadata::class.java)
 //    val metadataAnnotation = Metadata(
 //        // pass arguments here
