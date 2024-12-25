@@ -35,6 +35,7 @@ dependencies {
     // kotlin
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    implementation("org.jetbrains.kotlin:kotlin-metadata-jvm:$kotlinVersion")
 
     // kt2ts
     implementation("io.github.kt2ts:kt2ts-annotation:1.0.0")
