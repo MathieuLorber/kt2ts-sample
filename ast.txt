@@ -1,0 +1,55 @@
+PackageHeader(io.github.kt2tssample)
+
+importList
+  Import(com.fasterxml.jackson.annotation.JsonTypeInfo)
+  Import(kt2ts.annotation.GenerateTypescript)
+
+KlassDeclaration(class SomeSealedClass)
+  KlassAnnotation(GenerateTypescript)
+  KlassAnnotation(JsonTypeInfo)
+    KlassDeclaration(argument use)
+      KlassIdentifier(JsonTypeInfo)
+        postfixUnarySuffix
+          navigationSuffix
+            memberAccessOperator
+              DOT >>>.<<< (DEFAULT_TOKEN_CHANNEL)
+            simpleIdentifier
+              Identifier >>>Id<<< (DEFAULT_TOKEN_CHANNEL)
+        postfixUnarySuffix
+          navigationSuffix
+            memberAccessOperator
+              DOT >>>.<<< (DEFAULT_TOKEN_CHANNEL)
+            simpleIdentifier
+              Identifier >>>NAME<<< (DEFAULT_TOKEN_CHANNEL)
+    KlassDeclaration(argument include)
+      KlassIdentifier(JsonTypeInfo)
+        postfixUnarySuffix
+          navigationSuffix
+            memberAccessOperator
+              DOT >>>.<<< (DEFAULT_TOKEN_CHANNEL)
+            simpleIdentifier
+              Identifier >>>As<<< (DEFAULT_TOKEN_CHANNEL)
+        postfixUnarySuffix
+          navigationSuffix
+            memberAccessOperator
+              DOT >>>.<<< (DEFAULT_TOKEN_CHANNEL)
+            simpleIdentifier
+              Identifier >>>PROPERTY<<< (DEFAULT_TOKEN_CHANNEL)
+    KlassDeclaration(argument property)
+      KlassString
+        "objectType"
+  KlassModifier(sealed, classModifier)
+
+KlassDeclaration(class SomeClassImpl)
+  KlassModifier(data, classModifier)
+  KlassDeclaration(constructor)
+    KlassDeclaration(val someValue String)
+  KlassInheritance
+    KlassIdentifier(SomeSealedClass)
+
+KlassDeclaration(class AnotherClassImpl)
+  KlassModifier(data, classModifier)
+  KlassDeclaration(constructor)
+    KlassDeclaration(val anotherValue Int)
+  KlassInheritance
+    KlassIdentifier(SomeSealedClass)
