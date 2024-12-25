@@ -36,6 +36,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
+    implementation("com.github.cretz.kastree:kastree-ast-jvm:0.4.0")
+    implementation("com.github.cretz.kastree:kastree-ast-psi:0.4.0")
+    implementation("com.github.cretz.kastree:kastree-ast-common:0.4.0")
+
     // kt2ts
     implementation("io.github.kt2ts:kt2ts-annotation:1.0.0")
     ksp("io.github.kt2ts:kt2ts-ksp-generator:0.0.9")
