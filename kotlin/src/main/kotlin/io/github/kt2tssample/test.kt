@@ -28,13 +28,29 @@ fun main() {
         val imports = processImports(astList)
         val classes = process(astList).let(::addSealedChildClasses)
         val sb = StringBuilder()
+        val classMap = classes.associateBy { it.localName }
         classes.forEach {
+          sb.append("\n")
           if (it.isSealed) {
             sb.append("export type ${it.localName.name} =")
             it.sealedChildClasses.forEach { sb.append(" | ${it.name}") }
             sb.append(";\n")
           } else {
             sb.append("export interface ${it.localName.name} {\n")
+            val objectTypeProperty =
+                it.parentClasses
+                    // TODO fails if more than one
+                    .firstNotNullOfOrNull {
+                      val p = classMap[it]
+                      p?.annotations
+                          // TODO always qualifed...
+                          ?.filter { it.annotation.name == "JsonTypeInfo" }
+                          ?.map { it.values["property"] }
+                          ?.firstOrNull()
+                    }
+            if (objectTypeProperty != null) {
+              sb.append("  $objectTypeProperty: \"${it.localName.name}\";\n")
+            }
             it.fields.forEach { field -> sb.append("  ${field.fieldName}: ${field.type.name};\n") }
             sb.append("}\n")
           }
