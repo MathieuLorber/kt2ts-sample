@@ -16,17 +16,33 @@ import kotlinx.ast.grammar.kotlin.common.summary.Import
 import kotlinx.ast.grammar.kotlin.common.summary.PackageHeader
 import kotlinx.ast.grammar.kotlin.target.antlr.kotlin.KotlinGrammarAntlrKotlinParser
 
-val scalarMap = mapOf(
-    "String" to "string",
-    "Int" to "number",
-    "Boolean" to "boolean",
-)
+val scalarMap = mapOf("String" to "string", "Int" to "number", "Boolean" to "boolean")
 
 fun main() {
-    val sourceDir = Path.of("/Users/mlo/git/kt2ts-sample/kotlin/src/main/kotlin/io/github/kt2tssample")
+    val sourceDir =
+        Path.of("/Users/mlo/git/kt2ts-sample/kotlin/src/main/kotlin/io/github/kt2tssample")
     val source = sourceDir.resolve("Sealed.kt")
     val destinationDir = sourceDir
-    val destination = destinationDir.resolve("Sealed.ts")
+    val destination = destinationDir.resolve("Sealed.generated.ts")
+
+    // test on Lite
+    //    val sourceDir =
+    // Path.of("/Users/mlo/git/lite/pro/lite-pro-server/src/main/kotlin/lite/pro/query")
+    //    val source = sourceDir.resolve("Queries.kt")
+    //    val destinationDir = Path.of("/Users/mlo/git/lite/frontends/apps/pro/src/generated/query")
+    //    val destination = destinationDir.resolve("Queries.generated.ts")
+
+    process(source, destination)
+    ShellRunner.run(
+        Path.of("/Users/mlo/git/kt2ts-sample/typescript"),
+        "yarn",
+        "prettier",
+        "--write",
+        destination.absolutePathString(),
+    )
+}
+
+fun process(source: Path, destination: Path) {
     val astSource = AstSource.File(source.absolutePathString())
     val kotlinFile = KotlinGrammarAntlrKotlinParser.parseKotlinFile(astSource)
     kotlinFile
@@ -71,12 +87,22 @@ fun main() {
 }
 
 fun printType(type: TypeDeclaration): String {
-    val t = scalarMap[type.name.name] ?: type.name.name
-    if (type.generics.isNotEmpty()) {
-        return "$t<${type.generics.joinToString(separator = ", ") { printType(it) }}>"
+    if (isList(type)) {
+        require(type.generics.size == 1)
+        return "${printType(type.generics.first())}[]"
     }
-    return t
+    val t = scalarMap[type.name.name] ?: type.name.name
+    val generics =
+        if (type.generics.isNotEmpty()) {
+            "<${type.generics.joinToString(separator = ", ") { printType(it) }}>"
+        } else {
+            ""
+        }
+    return "$t$generics"
 }
+
+fun isList(declaration: TypeDeclaration): Boolean = declaration.name.name in setOf("List", "Set")
+
 data class PackageDeclaration(val name: String)
 
 // TODO think to subClass
@@ -175,12 +201,14 @@ fun processFields(declarations: List<KlassDeclaration>): List<FieldDeclaration> 
         ?.filterIsInstance<KlassDeclaration>()
         ?.mapNotNull {
             val identifier = it.identifier?.identifier ?: return@mapNotNull null
-            val type = it.type?.firstOrNull()?.let { processTypeDeclaration(it) } ?: return@mapNotNull null
+            val type =
+                it.type?.firstOrNull()?.let { processTypeDeclaration(it) } ?: return@mapNotNull null
             FieldDeclaration(fieldName = identifier, type = type)
         } ?: emptyList()
 
 fun processTypeDeclaration(type: KlassIdentifier): TypeDeclaration {
-    val generics = type.attributes.filterIsInstance<KlassIdentifier>().map { processTypeDeclaration(it) }
+    val generics =
+        type.attributes.filterIsInstance<KlassIdentifier>().map { processTypeDeclaration(it) }
     return TypeDeclaration(name = ClassSimpleName(type.identifier), generics = generics)
 }
 
