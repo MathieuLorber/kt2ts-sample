@@ -37,21 +37,19 @@ export interface MyDataClass {
   nullableItem?: BaseDataClass;
   id: MySampleId;
   nullableId?: MySampleId;
-  intPair: Pair<number, number>;
-  nullableIntPair: Pair<number, number>;
-  stringPair: Pair<string, string>;
-  nullableStringPair: Pair<string, string>;
-  classPair: Pair<BaseDataClass, BaseDataClass>;
-  nullableClassPair: Pair<BaseDataClass, BaseDataClass>;
-  nullableClassNullablePair?: Pair<BaseDataClass, BaseDataClass>;
-  nullablePair?: Pair<BaseDataClass, BaseDataClass>;
+  intPair: [number, number];
+  nullableIntPair: [number | null, number | null];
+  stringPair: [string, string];
+  nullableStringPair: [string | null, string | null];
+  classPair: [BaseDataClass, BaseDataClass];
+  nullableClassPair: [BaseDataClass | null, BaseDataClass | null];
+  nullableClassNullablePair?: [BaseDataClass | null, BaseDataClass | null];
+  nullablePair?: [BaseDataClass, BaseDataClass];
+  classTriple: [BaseDataClass, BaseDataClass, BaseDataClass];
   any: Any;
   nullableAny?: Any;
 }
 
 export interface ComplexStuff {
-  value: Pair<
-    Map<MySampleId, Map<MySampleId, BaseDataClass>[]>,
-    BaseDataClass
-  >[][];
+  value: [Map<MySampleId, Map<MySampleId, BaseDataClass>[]>, BaseDataClass][][];
 }

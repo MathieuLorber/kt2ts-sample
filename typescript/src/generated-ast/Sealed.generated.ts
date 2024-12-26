@@ -17,7 +17,7 @@ export interface WithList {
 
 export interface ComplexGenerics {
   objectType: 'ComplexGenerics';
-  list: Pair<string, string>[];
+  list: [string, string][];
 }
 
 export interface SomeClassImpl {

@@ -130,17 +130,61 @@ fun process(source: Path, destination: Path) {
         .onFailure { errors -> errors.forEach(::println) }
 }
 
-fun printType(type: TypeDeclaration): String {
-    if (isList(type)) {
-        require(type.generics.size == 1)
-        val g = type.generics.first()
-        if (!g.nullable) {
-            return "${printType(g)}[]"
-        } else {
-            // TODO cannot be undefined - doc
-            return "(${printType(g)} | null)[]"
-        }
+enum class Category {
+    List,
+    Pair,
+    Triple,
+    DataClass
+}
+
+fun printType(type: TypeDeclaration): String =
+    when (category(type)) {
+        Category.List -> printList(type)
+        Category.Pair -> printPair(type)
+        Category.Triple -> printTriple(type)
+        Category.DataClass -> printDataClass(type)
     }
+
+fun category(type: TypeDeclaration): Category {
+    if (type.name.name in setOf("List", "Set")) return Category.List
+    if (type.name.name == "Pair") return Category.Pair
+    if (type.name.name == "Triple") return Category.Triple
+    return Category.DataClass
+}
+
+fun printList(type: TypeDeclaration): String {
+    require(type.generics.size == 1)
+    val g = type.generics.first()
+    val t = printType(g)
+    val n = if (!g.nullable) t
+    // TODO cannot be undefined - doc
+    else "($t | null)"
+    return "$n[]"
+}
+
+fun printTypeOrNull(type: TypeDeclaration): String {
+    val t = printType(type)
+    return if (type.nullable) "$t | null" else t
+}
+
+fun printPair(type: TypeDeclaration): String {
+    require(type.generics.size == 2)
+    // TODO cannot be undefined, need null - doc
+    val g1 = printTypeOrNull(type.generics[0])
+    val g2 = printTypeOrNull(type.generics[1])
+    return "[$g1, $g2]"
+}
+
+fun printTriple(type: TypeDeclaration): String {
+    require(type.generics.size == 3)
+    // TODO cannot be undefined, need null - doc
+    val g1 = printTypeOrNull(type.generics[0])
+    val g2 = printTypeOrNull(type.generics[1])
+    val g3 = printTypeOrNull(type.generics[2])
+    return "[$g1, $g2, $g3]"
+}
+
+fun printDataClass(type: TypeDeclaration): String {
     val t = scalarMap[type.name.name] ?: type.name.name
     val generics =
         if (type.generics.isNotEmpty()) {
@@ -150,8 +194,6 @@ fun printType(type: TypeDeclaration): String {
         }
     return "$t$generics"
 }
-
-fun isList(declaration: TypeDeclaration): Boolean = declaration.name.name in setOf("List", "Set")
 
 data class PackageDeclaration(val name: String)
 

@@ -51,6 +51,7 @@ export interface MyDataClass {
   nullableClassPair: [BaseDataClass | null, BaseDataClass | null];
   nullableClassNullablePair?: [BaseDataClass | null, BaseDataClass | null];
   nullablePair?: [BaseDataClass, BaseDataClass];
+  classTriple: Triple;
   any: any;
   nullableAny?: any;
 }
