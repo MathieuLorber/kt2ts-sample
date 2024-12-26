@@ -23,10 +23,12 @@ val scalarMap = mapOf(
 )
 
 fun main() {
-    val dir = Path.of("/Users/mlo/git/kt2ts-sample/kotlin/src/main/kotlin/io/github/kt2tssample")
-    val path = dir.resolve("Sealed.kt")
-    val source = AstSource.File(path.absolutePathString())
-    val kotlinFile = KotlinGrammarAntlrKotlinParser.parseKotlinFile(source)
+    val sourceDir = Path.of("/Users/mlo/git/kt2ts-sample/kotlin/src/main/kotlin/io/github/kt2tssample")
+    val source = sourceDir.resolve("Sealed.kt")
+    val destinationDir = sourceDir
+    val destination = destinationDir.resolve("Sealed.ts")
+    val astSource = AstSource.File(source.absolutePathString())
+    val kotlinFile = KotlinGrammarAntlrKotlinParser.parseKotlinFile(astSource)
     kotlinFile
         .summary(attachRawAst = false)
         .onSuccess { astList ->
@@ -63,7 +65,7 @@ fun main() {
                     sb.append("}\n")
                 }
             }
-            dir.resolve("Sealed.ts").toFile().writeText(sb.toString())
+            destination.toFile().writeText(sb.toString())
         }
         .onFailure { errors -> errors.forEach(::println) }
 }
