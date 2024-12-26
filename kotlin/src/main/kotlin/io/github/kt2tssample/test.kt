@@ -19,6 +19,7 @@ import kotlinx.ast.grammar.kotlin.target.antlr.kotlin.KotlinGrammarAntlrKotlinPa
 val scalarMap = mapOf("String" to "string", "Int" to "number", "Boolean" to "boolean")
 
 fun main() {
+    val t = System.currentTimeMillis()
     val sourceDir =
         Path.of("/Users/mlo/git/kt2ts-sample/kotlin/src/main/kotlin/io/github/kt2tssample")
     val source = sourceDir.resolve("Sealed.kt")
@@ -33,6 +34,7 @@ fun main() {
     //    val destination = destinationDir.resolve("Queries.generated.ts")
 
     process(source, destination)
+    println("Generated in ${System.currentTimeMillis() - t}ms")
     ShellRunner.run(
         Path.of("/Users/mlo/git/kt2ts-sample/typescript"),
         "yarn",
