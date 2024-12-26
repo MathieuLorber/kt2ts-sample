@@ -60,7 +60,7 @@ fun main() {
                         sb.append("  $objectTypeProperty: \"${it.localName.name}\";\n")
                     }
                     it.fields.forEach { field ->
-                        sb.append("  ${field.fieldName}: ${scalarMap[field.type.name] ?: field.type.name};\n")
+                        sb.append("  ${field.fieldName}: ${printType(field.type)};\n")
                     }
                     sb.append("}\n")
                 }
@@ -70,6 +70,13 @@ fun main() {
         .onFailure { errors -> errors.forEach(::println) }
 }
 
+fun printType(type: TypeDeclaration): String {
+    val t = scalarMap[type.name.name] ?: type.name.name
+    if (type.generics.isNotEmpty()) {
+        return "$t<${type.generics.joinToString(separator = ", ") { printType(it) }}>"
+    }
+    return t
+}
 data class PackageDeclaration(val name: String)
 
 // TODO think to subClass
@@ -77,12 +84,14 @@ data class ClassSimpleName(val name: String)
 
 data class ClassQualifiedName(val name: String)
 
+data class TypeDeclaration(val name: ClassSimpleName, val generics: List<TypeDeclaration>)
+
 data class LocalClassDeclaration(
     val localName: ClassSimpleName,
     val qualifiedName: ClassQualifiedName,
 )
 
-data class FieldDeclaration(val fieldName: String, val type: ClassSimpleName)
+data class FieldDeclaration(val fieldName: String, val type: TypeDeclaration)
 
 // TODO attention pour les values il faut faire avec import
 data class ClassAnnotation(val annotation: ClassSimpleName, val values: Map<String, String>)
@@ -166,9 +175,14 @@ fun processFields(declarations: List<KlassDeclaration>): List<FieldDeclaration> 
         ?.filterIsInstance<KlassDeclaration>()
         ?.mapNotNull {
             val identifier = it.identifier?.identifier ?: return@mapNotNull null
-            val type = it.type?.firstOrNull()?.identifier ?: return@mapNotNull null
-            FieldDeclaration(fieldName = identifier, type = ClassSimpleName(type))
+            val type = it.type?.firstOrNull()?.let { processTypeDeclaration(it) } ?: return@mapNotNull null
+            FieldDeclaration(fieldName = identifier, type = type)
         } ?: emptyList()
+
+fun processTypeDeclaration(type: KlassIdentifier): TypeDeclaration {
+    val generics = type.attributes.filterIsInstance<KlassIdentifier>().map { processTypeDeclaration(it) }
+    return TypeDeclaration(name = ClassSimpleName(type.identifier), generics = generics)
+}
 
 fun processAnnotations(annotations: List<KlassAnnotation>): List<ClassAnnotation> =
     annotations.mapNotNull {
