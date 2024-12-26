@@ -2,6 +2,10 @@ package io.github.kt2tssample
 
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.extension
+import kotlin.io.path.name
+import kotlin.io.path.readText
+import kotlin.io.path.walk
 import kotlinx.ast.common.AstSource
 import kotlinx.ast.common.ast.Ast
 import kotlinx.ast.common.ast.DefaultAstNode
@@ -22,30 +26,51 @@ fun main() {
     val t = System.currentTimeMillis()
     val sourceDir =
         Path.of("/Users/mlo/git/kt2ts-sample/kotlin/src/main/kotlin/io/github/kt2tssample")
-    val source = sourceDir.resolve("Sealed.kt")
-    val destinationDir = sourceDir
-    val destination = destinationDir.resolve("Sealed.generated.ts")
+    val destinationDir = Path.of("/Users/mlo/git/kt2ts-sample/typescript/src/generated-ast")
 
     // test on Lite
     //    val sourceDir =
-    // Path.of("/Users/mlo/git/lite/pro/lite-pro-server/src/main/kotlin/lite/pro/query")
-    //    val source = sourceDir.resolve("Queries.kt")
-    //    val destinationDir = Path.of("/Users/mlo/git/lite/frontends/apps/pro/src/generated/query")
-    //    val destination = destinationDir.resolve("Queries.generated.ts")
+    //        Path.of("/Users/mlo/git/lite/pro/lite-pro-server/src/main/kotlin/lite/pro")
+    //    val destinationDir = Path.of("/Users/mlo/git/lite/frontends/apps/pro/src/generated")
 
-    process(source, destination)
+    sourceDir
+        .walk()
+        .filter { it.extension == "kt" }
+        .forEach {
+            try {
+                val destinationFileName = it.name.replace(".kt", ".generated.ts")
+                val packagePath =
+                    it.parent.absolutePathString().substring(sourceDir.absolutePathString().length)
+                val destination =
+                    destinationDir
+                        .resolve(packagePath.removePrefix("/"))
+                        .resolve(destinationFileName)
+                destination.toFile().parentFile.mkdirs()
+                process(it, destination)
+            } catch (e: Exception) {
+                println("Error $it")
+                e.printStackTrace()
+            }
+        }
     println("Generated in ${System.currentTimeMillis() - t}ms")
+    val t2 = System.currentTimeMillis()
     ShellRunner.run(
         Path.of("/Users/mlo/git/kt2ts-sample/typescript"),
         "yarn",
         "prettier",
         "--write",
-        destination.absolutePathString(),
+        destinationDir.absolutePathString(),
     )
+    println("Formatted in ${System.currentTimeMillis() - t}ms")
 }
 
 fun process(source: Path, destination: Path) {
-    val astSource = AstSource.File(source.absolutePathString())
+    val fileSource = source.readText()
+    if ("kt2ts.annotation.GenerateTypescript" !in fileSource) {
+        return
+    }
+    println("Process ${source.absolutePathString()} => ${destination.absolutePathString()}")
+    val astSource = AstSource.String(source.absolutePathString(), fileSource)
     val kotlinFile = KotlinGrammarAntlrKotlinParser.parseKotlinFile(astSource)
     kotlinFile
         .summary(attachRawAst = false)
@@ -83,7 +108,9 @@ fun process(source: Path, destination: Path) {
                     sb.append("}\n")
                 }
             }
-            destination.toFile().writeText(sb.toString())
+            if (sb.isNotEmpty()) {
+                destination.toFile().writeText(sb.toString())
+            }
         }
         .onFailure { errors -> errors.forEach(::println) }
 }
