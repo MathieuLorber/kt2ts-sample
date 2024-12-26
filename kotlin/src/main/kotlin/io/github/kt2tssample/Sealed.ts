@@ -2,11 +2,11 @@
 export type SomeSealedClass = | SomeClassImpl | AnotherClassImpl;
 
 export interface SomeClassImpl {
-  query: "SomeClassImpl";
-  someValue: String;
+  objectType: "SomeClassImpl";
+  someValue: string;
 }
 
 export interface AnotherClassImpl {
-  query: "AnotherClassImpl";
-  anotherValue: Int;
+  objectType: "AnotherClassImpl";
+  anotherValue: number;
 }
