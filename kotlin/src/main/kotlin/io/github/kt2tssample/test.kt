@@ -29,7 +29,9 @@ val scalarMap = mapOf(
     "Int" to "number",
     "Long" to "number",
     // boolean
-    "Boolean" to "boolean"
+    "Boolean" to "boolean",
+    // any
+    "Any" to "any"
 )
 
 fun main() {
