@@ -1,14 +1,17 @@
-
-export type SomeSealedClass = | WithList | ComplexGenerics | SomeClassImpl | AnotherClassImpl;
+export type SomeSealedClass =
+  | WithList
+  | ComplexGenerics
+  | SomeClassImpl
+  | AnotherClassImpl;
 
 export interface WithList {
   objectType: "WithList";
-  list: List<string>;
+  list: string[];
 }
 
 export interface ComplexGenerics {
   objectType: "ComplexGenerics";
-  list: List<Pair<string, string>>;
+  list: Pair<string, string>[];
 }
 
 export interface SomeClassImpl {
