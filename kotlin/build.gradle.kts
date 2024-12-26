@@ -16,7 +16,7 @@ configurations.all { exclude(group = "junit", module = "junit") }
 
 ksp {
     arg("kt2ts:clientDirectory", "$rootDir/typescript")
-    arg("kt2ts:dropPackage", "com.kttswebapptemplate")
+    arg("kt2ts:dropPackage", "io.github.kt2tssample")
     arg("kt2ts:mappings", "$rootDir/typescript/kt-to-ts-mappings.json")
     arg(
         "kt2ts:nominalStringMappings",
