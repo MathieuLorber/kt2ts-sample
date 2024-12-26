@@ -1,8 +1,14 @@
 export type SomeSealedClass =
+  | Nullable
   | WithList
   | ComplexGenerics
   | SomeClassImpl
   | AnotherClassImpl;
+
+export interface Nullable {
+  objectType: 'Nullable';
+  value?: string;
+}
 
 export interface WithList {
   objectType: 'WithList';

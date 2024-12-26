@@ -45,7 +45,11 @@ fun main() {
 
     sourceDir
         .walk()
+        // TODO remove
+        //.filter { it.name == "Sealed.kt" }
         .filter { it.extension == "kt" }
+        // TODO juste pour sortir ce fichier pour le moment
+        .filter { it.name != "test.kt" }
         .forEach {
             try {
                 val destinationFileName = it.name.replace(".kt", ".generated.ts")
@@ -113,7 +117,8 @@ fun process(source: Path, destination: Path) {
                         sb.append("  $objectTypeProperty: \"${it.localName.name}\";\n")
                     }
                     it.fields.forEach { field ->
-                        sb.append("  ${field.fieldName}: ${printType(field.type)};\n")
+                        val nullable = if (field.type.nullable) "?" else ""
+                        sb.append("  ${field.fieldName}$nullable: ${printType(field.type)};\n")
                     }
                     sb.append("}\n")
                 }
@@ -128,7 +133,13 @@ fun process(source: Path, destination: Path) {
 fun printType(type: TypeDeclaration): String {
     if (isList(type)) {
         require(type.generics.size == 1)
-        return "${printType(type.generics.first())}[]"
+        val g = type.generics.first()
+        if (!g.nullable) {
+            return "${printType(g)}[]"
+        } else {
+            // TODO cannot be undefined - doc
+            return "(${printType(g)} | null)[]"
+        }
     }
     val t = scalarMap[type.name.name] ?: type.name.name
     val generics =
@@ -149,7 +160,7 @@ data class ClassSimpleName(val name: String)
 
 data class ClassQualifiedName(val name: String)
 
-data class TypeDeclaration(val name: ClassSimpleName, val generics: List<TypeDeclaration>)
+data class TypeDeclaration(val name: ClassSimpleName, val nullable: Boolean, val generics: List<TypeDeclaration>)
 
 data class LocalClassDeclaration(
     val localName: ClassSimpleName,
@@ -202,30 +213,33 @@ private fun process(asts: List<Ast>): List<ClassDeclaration> =
         // en fait on garde d'autres trucs, genre les sealed
         //        .filter {it.children.filterIsInstance<KlassModifier>().first().modifier == "data"}
         .mapNotNull {
-            val identifier = it.identifier?.identifier ?: return@mapNotNull null
-            val modifiers = it.modifiers.filter { it.modifier in setOf("sealed", "data") }
-            if (modifiers.isEmpty()) return@mapNotNull null
-            //            val parents =
-            val annotations = processAnnotations(it.annotations)
-            // TODO qualifiedName
-            val selectionOrigins =
-                if (annotations.any { it.annotation.name == "GenerateTypescript" }) {
-                    listOf(SelectionOrigin.ByAnnotation(ClassSimpleName("GenerateTypescript")))
-                } else {
-                    emptyList()
-                }
-            val parentClasses = processParentClasses(it.children)
-            val fields = processFields(it.parameter)
-            ClassDeclaration(
-                localName = ClassSimpleName(identifier),
-                annotations = annotations,
-                isSealed = modifiers.any { it.modifier == "sealed" },
-                sealedChildClasses = emptyList(),
-                parentClasses = parentClasses,
-                fields = fields,
-                selectionOrigins = selectionOrigins,
-            )
+            processClass(it)
         }
+
+fun processClass(declaration: KlassDeclaration): ClassDeclaration? {
+    val identifier = declaration.identifier?.identifier ?: return null
+    val modifiers = declaration.modifiers.filter { it.modifier in setOf("sealed", "data") }
+    if (modifiers.isEmpty()) return null
+    val annotations = processAnnotations(declaration.annotations)
+    // TODO qualifiedName
+    val selectionOrigins =
+        if (annotations.any { it.annotation.name == "GenerateTypescript" }) {
+            listOf(SelectionOrigin.ByAnnotation(ClassSimpleName("GenerateTypescript")))
+        } else {
+            emptyList()
+        }
+    val parentClasses = processParentClasses(declaration.children)
+    val fields = processFields(declaration.parameter)
+    return ClassDeclaration(
+        localName = ClassSimpleName(identifier),
+        annotations = annotations,
+        isSealed = modifiers.any { it.modifier == "sealed" },
+        sealedChildClasses = emptyList(),
+        parentClasses = parentClasses,
+        fields = fields,
+        selectionOrigins = selectionOrigins,
+    )
+}
 
 fun processParentClasses(children: List<Ast>): List<ClassSimpleName> =
     children.filterIsInstance<KlassInheritance>().mapNotNull {
@@ -246,9 +260,10 @@ fun processFields(declarations: List<KlassDeclaration>): List<FieldDeclaration> 
         } ?: emptyList()
 
 fun processTypeDeclaration(type: KlassIdentifier): TypeDeclaration {
+    val nullable = type.rawName.endsWith("?")
     val generics =
         type.attributes.filterIsInstance<KlassIdentifier>().map { processTypeDeclaration(it) }
-    return TypeDeclaration(name = ClassSimpleName(type.identifier), generics = generics)
+    return TypeDeclaration(name = ClassSimpleName(type.identifier), nullable = nullable, generics = generics)
 }
 
 fun processAnnotations(annotations: List<KlassAnnotation>): List<ClassAnnotation> =
