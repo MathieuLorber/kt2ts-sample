@@ -1,12 +1,12 @@
 export interface MyDataClass {
   boolean: boolean;
   nullableBoolean: boolean;
-  double: Double;
-  nullableDouble: Double;
+  double: number;
+  nullableDouble: number;
   int: number;
   nullableInt: number;
-  long: Long;
-  nullableLong: Long;
+  long: number;
+  nullableLong: number;
   string: string;
   nullableString: string;
   enum: MyEnum;

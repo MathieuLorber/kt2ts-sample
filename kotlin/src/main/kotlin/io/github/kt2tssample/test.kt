@@ -20,7 +20,17 @@ import kotlinx.ast.grammar.kotlin.common.summary.Import
 import kotlinx.ast.grammar.kotlin.common.summary.PackageHeader
 import kotlinx.ast.grammar.kotlin.target.antlr.kotlin.KotlinGrammarAntlrKotlinParser
 
-val scalarMap = mapOf("String" to "string", "Int" to "number", "Boolean" to "boolean")
+val scalarMap = mapOf(
+    // string
+    "String" to "string",
+    // number
+    "Double" to "number",
+    "Float" to "number",
+    "Int" to "number",
+    "Long" to "number",
+    // boolean
+    "Boolean" to "boolean"
+)
 
 fun main() {
     val t = System.currentTimeMillis()
