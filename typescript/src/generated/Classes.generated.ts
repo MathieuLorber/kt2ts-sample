@@ -1,7 +1,7 @@
 import { LocalDate } from 'domain/datetime';
-import { MyEnum } from 'generated/io/github/kt2tssample/Enum.generated';
-import { MySampleId } from 'generated/io/github/kt2tssample/SampleId.generated';
-import { BaseDataClass } from 'generated/io/github/kt2tssample/subpackage/SubPackageClasses.generated';
+import { MyEnum } from 'generated//Enum.generated';
+import { MySampleId } from 'generated//SampleId.generated';
+import { BaseDataClass } from 'generated/subpackage/SubPackageClasses.generated';
 import { Dict } from 'utils/nominal-class';
 
 export interface MyDataClass {
