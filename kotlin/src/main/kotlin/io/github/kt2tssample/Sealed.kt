@@ -14,6 +14,8 @@ import kt2ts.annotation.GenerateTypescript
 )
 sealed class SomeSealedClass
 
+data class Nullable(val value: String?) : SomeSealedClass()
+
 data class WithList(val list: List<String>) : SomeSealedClass()
 
 data class ComplexGenerics(val list: List<Pair<String, String>>) : SomeSealedClass()
