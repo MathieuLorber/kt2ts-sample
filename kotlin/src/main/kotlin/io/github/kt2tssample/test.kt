@@ -20,19 +20,20 @@ import kotlinx.ast.grammar.kotlin.common.summary.Import
 import kotlinx.ast.grammar.kotlin.common.summary.PackageHeader
 import kotlinx.ast.grammar.kotlin.target.antlr.kotlin.KotlinGrammarAntlrKotlinParser
 
-val scalarMap = mapOf(
-    // string
-    "String" to "string",
-    // number
-    "Double" to "number",
-    "Float" to "number",
-    "Int" to "number",
-    "Long" to "number",
-    // boolean
-    "Boolean" to "boolean",
-    // any
-    "Any" to "any"
-)
+val scalarMap =
+    mapOf(
+        // string
+        "String" to "string",
+        // number
+        "Double" to "number",
+        "Float" to "number",
+        "Int" to "number",
+        "Long" to "number",
+        // boolean
+        "Boolean" to "boolean",
+        // any
+        "Any" to "any",
+    )
 
 fun main() {
     val t = System.currentTimeMillis()
@@ -48,7 +49,7 @@ fun main() {
     sourceDir
         .walk()
         // TODO remove
-        //.filter { it.name == "Sealed.kt" }
+        // .filter { it.name == "Sealed.kt" }
         .filter { it.extension == "kt" }
         // TODO juste pour sortir ce fichier pour le moment
         .filter { it.name != "test.kt" }
@@ -94,39 +95,39 @@ fun process(source: Path, destination: Path) {
             val packageName = processPackage(astList)
             val imports = processImports(astList)
             val classes = process(astList).let(::addSealedChildClasses)
-            val sb = StringBuilder()
             val classMap = classes.associateBy { it.localName }
-            classes.forEach {
-                sb.append("\n")
-                if (it.isSealed) {
-                    sb.append("export type ${it.localName.name} =")
-                    it.sealedChildClasses.forEach { sb.append(" | ${it.name}") }
-                    sb.append(";\n")
-                } else {
-                    sb.append("export interface ${it.localName.name} {\n")
-                    val objectTypeProperty =
-                        it.parentClasses
-                            // TODO fails if more than one
-                            .firstNotNullOfOrNull {
-                                val p = classMap[it]
-                                p?.annotations
-                                    // TODO always qualifed...
-                                    ?.filter { it.annotation.name == "JsonTypeInfo" }
-                                    ?.map { it.values["property"] }
-                                    ?.firstOrNull()
+            val result =
+                classes.map {
+                    buildString {
+                        if (it.isSealed) {
+                            appendLine("export type ${it.localName.name} =")
+                            it.sealedChildClasses.forEach { appendLine(" | ${it.name}") }
+                            appendLine(";")
+                        } else {
+                            appendLine("export interface ${it.localName.name} {")
+                            val objectTypeProperty =
+                                it.parentClasses
+                                    // TODO fails if more than one
+                                    .firstNotNullOfOrNull {
+                                        val p = classMap[it]
+                                        p?.annotations
+                                            // TODO always qualifed...
+                                            ?.filter { it.annotation.name == "JsonTypeInfo" }
+                                            ?.map { it.values["property"] }
+                                            ?.firstOrNull()
+                                    }
+                            if (objectTypeProperty != null) {
+                                appendLine("  $objectTypeProperty: \"${it.localName.name}\";")
                             }
-                    if (objectTypeProperty != null) {
-                        sb.append("  $objectTypeProperty: \"${it.localName.name}\";\n")
-                    }
-                    it.fields.forEach { field ->
-                        val nullable = if (field.type.nullable) "?" else ""
-                        sb.append("  ${field.fieldName}$nullable: ${printType(field.type)};\n")
-                    }
-                    sb.append("}\n")
-                }
-            }
-            if (sb.isNotEmpty()) {
-                destination.toFile().writeText(sb.toString())
+                            it.fields.forEach { field ->
+                                val nullable = if (field.type.nullable) "?" else ""
+                                appendLine("  ${field.fieldName}$nullable: ${printType(field.type)};")
+                            }
+                        }
+                    }.trim()
+                }.filter { it.isNotEmpty() }
+            if (result.isNotEmpty()) {
+                destination.toFile().writeText(result.joinToString(separator = "\n"))
             }
         }
         .onFailure { errors -> errors.forEach(::println) }
@@ -136,7 +137,7 @@ enum class Category {
     List,
     Pair,
     Triple,
-    DataClass
+    DataClass,
 }
 
 fun printType(type: TypeDeclaration): String =
@@ -158,9 +159,10 @@ fun printList(type: TypeDeclaration): String {
     require(type.generics.size == 1)
     val g = type.generics.first()
     val t = printType(g)
-    val n = if (!g.nullable) t
-    // TODO cannot be undefined - doc
-    else "($t | null)"
+    val n =
+        if (!g.nullable) t
+        // TODO cannot be undefined - doc
+        else "($t | null)"
     return "$n[]"
 }
 
@@ -204,7 +206,11 @@ data class ClassSimpleName(val name: String)
 
 data class ClassQualifiedName(val name: String)
 
-data class TypeDeclaration(val name: ClassSimpleName, val nullable: Boolean, val generics: List<TypeDeclaration>)
+data class TypeDeclaration(
+    val name: ClassSimpleName,
+    val nullable: Boolean,
+    val generics: List<TypeDeclaration>,
+)
 
 data class LocalClassDeclaration(
     val localName: ClassSimpleName,
@@ -256,9 +262,7 @@ private fun process(asts: List<Ast>): List<ClassDeclaration> =
         .filterIsInstance<KlassDeclaration>()
         // en fait on garde d'autres trucs, genre les sealed
         //        .filter {it.children.filterIsInstance<KlassModifier>().first().modifier == "data"}
-        .mapNotNull {
-            processClass(it)
-        }
+        .mapNotNull { processClass(it) }
 
 fun processClass(declaration: KlassDeclaration): ClassDeclaration? {
     val identifier = declaration.identifier?.identifier ?: return null
@@ -307,7 +311,11 @@ fun processTypeDeclaration(type: KlassIdentifier): TypeDeclaration {
     val nullable = type.rawName.endsWith("?")
     val generics =
         type.attributes.filterIsInstance<KlassIdentifier>().map { processTypeDeclaration(it) }
-    return TypeDeclaration(name = ClassSimpleName(type.identifier), nullable = nullable, generics = generics)
+    return TypeDeclaration(
+        name = ClassSimpleName(type.identifier),
+        nullable = nullable,
+        generics = generics,
+    )
 }
 
 fun processAnnotations(annotations: List<KlassAnnotation>): List<ClassAnnotation> =
