@@ -37,8 +37,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
-    api("com.github.kotlinx.ast:grammar-antlr4-parser-common:0.1.0")
-    implementation("com.github.kotlinx.ast:grammar-antlr4-parser-common:0.1.0")
+    api("com.github.kotlinx.ast:grammar-kotlin-parser-antlr-kotlin:v0.1.0")
+    implementation("com.github.kotlinx.ast:grammar-kotlin-parser-antlr-kotlin:v0.1.0")
 
     // kt2ts
     implementation("io.github.kt2ts:kt2ts-annotation:1.0.0")
