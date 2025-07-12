@@ -85,6 +85,54 @@
           "store_path": "/nix/store/gbimpqc5qhwvjdvbmvs5yzc8hf5zp03w-nodejs-24.3.0"
         }
       }
+    },
+    "yarn@1.22.22": {
+      "last_modified": "2025-06-20T02:24:11Z",
+      "resolved": "github:NixOS/nixpkgs/076e8c6678d8c54204abcb4b1b14c366835a58bb#yarn",
+      "source": "devbox-search",
+      "version": "1.22.22",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/k2b00nykr3pr34xcz4vn4xfhknd59rr2-yarn-1.22.22",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/k2b00nykr3pr34xcz4vn4xfhknd59rr2-yarn-1.22.22"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/z1baspkzkiaj0k3faxwvk130ilbhi9lm-yarn-1.22.22",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/z1baspkzkiaj0k3faxwvk130ilbhi9lm-yarn-1.22.22"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/crfwdq90h9byj2njzpr610s0gwxhjqwc-yarn-1.22.22",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/crfwdq90h9byj2njzpr610s0gwxhjqwc-yarn-1.22.22"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/fp98fzb6mw6159pbgnwrhpag4w3mc8zq-yarn-1.22.22",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/fp98fzb6mw6159pbgnwrhpag4w3mc8zq-yarn-1.22.22"
+        }
+      }
     }
   }
 }
